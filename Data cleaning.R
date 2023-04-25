@@ -156,3 +156,20 @@ dn18 <- dn18 %>%
          ss_comp = tn2,
          ss_cont = tn3,         
          pretax_profit = kqkd7)
+
+#######################
+# SETTING UP PANEL ID #
+#######################
+
+dn0818 <- c("dn08", "dn09", "dn10", "dn11", "dn12", "dn13", "dn14", "dn15", "dn16", "dn17", "dn18")
+
+for(i in dn0818){
+  
+  if(i %in% c("dn08", "dn09", "dn10", "dn12", "dn13")){
+    assign(i, get(i) %>% 
+             mutate(across(c(tinh, xa, huyen, lhdn, madn, macs, namsxkd, ma_thue), as.numeric),
+                    ma_thue = ifelse(is.na(ma_thue), 0, ma_thue)) %>% 
+             
+    )
+  }
+         }
