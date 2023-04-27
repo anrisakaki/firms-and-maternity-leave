@@ -157,19 +157,31 @@ dn18 <- dn18 %>%
          ss_cont = tn3,         
          pretax_profit = kqkd7)
 
-#######################
-# SETTING UP PANEL ID #
-#######################
-
 dn0818 <- c("dn08", "dn09", "dn10", "dn11", "dn12", "dn13", "dn14", "dn15", "dn16", "dn17", "dn18")
 
 for(i in dn0818){
   
-  if(i %in% c("dn08", "dn09", "dn10", "dn12", "dn13")){
-    assign(i, get(i) %>% 
-             mutate(across(c(tinh, xa, huyen, lhdn, madn, macs, namsxkd, ma_thue), as.numeric),
-                    ma_thue = ifelse(is.na(ma_thue), 0, ma_thue)) %>% 
-             
-    )
+  assign(i, get(i) %>% 
+           mutate(fworkers = n_fworkers/ n_workers,
+                  fworkers_eoy = n_fworkers_eoy/n_workers_eoy))
+  
+  if(i %in% c("dn08", "dn09", "dn10", "dn11", "dn12", "dn13", "dn14", "dn15")){
+    assign(i, get(i) %>%
+             mutate(finformal = n_finformal/n_informal,
+                    f_ss = n_fworkers_ss/n_workers_ss))
   }
-         }
+
+  if(i %in% c("dn08", "dn09", "dn10", "dn11", "dn12", "dn13", "dn14", "dn15")){
+
+    assign(i, get(i) %>%
+             select(tinh, huyen, xa, madn, macs, ma_thue, lhdn, vsic, fworkers, fworkers_eoy, finformal, f_ss, n_informal, n_workers_ss, wage, ss_comp, ss_cont, pretax_profit))
+  }
+
+  if(i %in% c("dn16", "dn17", "dn18")){
+
+    assign(i, get(i) %>%
+             select(tinh, huyen, xa, macs, ma_thue, lhdn, vsic, fworkers, fworkers_eoy, finformal, f_ss, n_informal, n_workers_ss, wage, ss_comp, ss_cont, pretax_profit))
+
+  }
+  
+}
