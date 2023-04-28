@@ -191,3 +191,15 @@ for(i in dn0818){
            replace(is.na(.), 0))
   
 }
+
+dn08 <- dn08 %>% mutate(year = 2008)
+dn09 <- dn09 %>% mutate(year = 2009)
+dn10 <- dn10 %>% mutate(year = 2010)
+dn11 <- dn11 %>% mutate(year = 2011)
+dn12 <- dn12 %>% mutate(year = 2012)
+dn13 <- dn13 %>% mutate(year = 2013)
+dn14 <- dn14 %>% mutate(year = 2014)
+dn15 <- dn15 %>% mutate(year = 2015)
+dn16 <- dn16 %>% mutate(year = 2016)
+dn17 <- dn17 %>% mutate(year = 2017)
+dn18 <- dn18 %>% mutate(year = 2018)
