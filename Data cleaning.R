@@ -3,7 +3,7 @@ dn08 <- dn08 %>%
          n_workers = ld11,
          n_fworkers = ld12,
          n_workers_eoy = ld13,
-         n_fworkers_eoy = ld13,
+         n_fworkers_eoy = ld14,
          n_workers_ss = ld23,
          n_fworkers_ss = ld24,
          n_informal = ld33,
@@ -18,7 +18,7 @@ dn09 <- dn09 %>%
          n_workers = ld11,
          n_fworkers = ld12,
          n_workers_eoy = ld13,
-         n_fworkers_eoy = ld13,
+         n_fworkers_eoy = ld14,
          n_workers_ss = ld23,
          n_fworkers_ss = ld24,
          n_informal = ld33,
@@ -33,7 +33,7 @@ dn10 <- dn10 %>%
          n_workers = ld11,
          n_fworkers = ld12,
          n_workers_eoy = ld13,
-         n_fworkers_eoy = ld13,
+         n_fworkers_eoy = ld14,
          n_workers_ss = ld23,
          n_fworkers_ss = ld24,
          n_informal = ld33,
@@ -174,14 +174,20 @@ for(i in dn0818){
   if(i %in% c("dn08", "dn09", "dn10", "dn11", "dn12", "dn13", "dn14", "dn15")){
 
     assign(i, get(i) %>%
-             select(tinh, huyen, xa, madn, macs, ma_thue, lhdn, vsic, fworkers, fworkers_eoy, finformal, f_ss, n_informal, n_workers_ss, wage, ss_comp, ss_cont, pretax_profit))
+             select(tinh, huyen, xa, madn, macs, ma_thue, lhdn, vsic, n_workers, n_fworkers, n_fworkers_eoy, n_informal, n_workers_ss, n_fworkers_ss, wage, ss_comp, ss_cont, pretax_profit, fworkers, fworkers_eoy, f_ss, finformal))
   }
 
   if(i %in% c("dn16", "dn17", "dn18")){
 
     assign(i, get(i) %>%
-             select(tinh, huyen, xa, macs, ma_thue, lhdn, vsic, fworkers, fworkers_eoy, finformal, f_ss, n_informal, n_workers_ss, wage, ss_comp, ss_cont, pretax_profit))
+             select(tinh, huyen, xa, ma_thue, lhdn, vsic, n_workers, n_fworkers, n_fworkers_eoy, n_informal, n_workers_ss, wage, ss_comp, ss_cont, pretax_profit, fworkers, fworkers_eoy))
 
   }
+  
+  assign(i, get(i) %>% 
+           mutate(n_informal = ifelse(is.na(n_informal), 0, n_informal),
+                  n_workers = ifelse(is.na(n_workers), 0, n_workers),
+                  total_workers = n_informal + n_workers) %>% 
+           replace(is.na(.), 0))
   
 }
