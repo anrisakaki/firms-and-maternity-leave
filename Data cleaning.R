@@ -168,19 +168,34 @@ for(i in dn0818){
   if(i %in% c("dn08", "dn09", "dn10", "dn11", "dn12", "dn13", "dn14", "dn15")){
     assign(i, get(i) %>%
              mutate(finformal = n_finformal/n_informal,
-                    f_ss = n_fworkers_ss/n_workers_ss))
+                    f_ss = n_fworkers_ss/n_workers_ss) %>% 
+             filter(finformal >= 0,
+                    finformal <= 1))
   }
 
-  if(i %in% c("dn08", "dn09", "dn10", "dn11", "dn12", "dn13", "dn14", "dn15")){
+  if(i %in% c("dn08", "dn09", "dn10", "dn12")){
+    
+    assign(i, get(i) %>%
+             select(tinh, huyen, xa, madn, macs, ma_thue, lhdn, namsxkd, vsic, n_workers, n_fworkers, n_fworkers_eoy, n_informal, n_finformal, n_workers_ss, n_fworkers_ss, wage, ss_comp, ss_cont, pretax_profit, fworkers, fworkers_eoy, f_ss, finformal))
+  }
+  
+  if(i %in% c("dn11", "dn13", "dn14", "dn15")){
 
     assign(i, get(i) %>%
              select(tinh, huyen, xa, madn, macs, ma_thue, lhdn, vsic, n_workers, n_fworkers, n_fworkers_eoy, n_informal, n_finformal, n_workers_ss, n_fworkers_ss, wage, ss_comp, ss_cont, pretax_profit, fworkers, fworkers_eoy, f_ss, finformal))
   }
 
-  if(i %in% c("dn16", "dn17", "dn18")){
-
+  if(i %in% c("dn16")){
+    
     assign(i, get(i) %>%
              select(tinh, huyen, xa, ma_thue, lhdn, vsic, n_workers, n_fworkers, n_fworkers_eoy, n_informal, n_workers_ss, wage, ss_comp, ss_cont, pretax_profit, fworkers, fworkers_eoy))
+    
+  }
+  
+    if(i %in% c("dn17", "dn18")){
+
+    assign(i, get(i) %>%
+             select(tinh, huyen, xa, ma_thue, namsxkd, lhdn, vsic, n_workers, n_fworkers, n_fworkers_eoy, n_informal, n_workers_ss, wage, ss_comp, ss_cont, pretax_profit, fworkers, fworkers_eoy))
 
   }
   
@@ -188,7 +203,12 @@ for(i in dn0818){
            mutate(n_informal = ifelse(is.na(n_informal), 0, n_informal),
                   n_workers = ifelse(is.na(n_workers), 0, n_workers),
                   total_workers = n_informal + n_workers) %>% 
-           replace(is.na(.), 0))
+           replace(is.na(.), 0) %>% 
+           mutate(across(vsic, as.numeric)) %>% 
+           filter(fworkers <= 1,
+                  fworkers >= 0,
+                  fworkers_eoy <= 1,
+                  fworkers_eoy >= 0))
   
 }
 
@@ -203,3 +223,5 @@ dn15 <- dn15 %>% mutate(year = 2015)
 dn16 <- dn16 %>% mutate(year = 2016)
 dn17 <- dn17 %>% mutate(year = 2017)
 dn18 <- dn18 %>% mutate(year = 2018)
+
+dn <- bind_rows(dn08, dn09, dn10, dn11, dn12, dn13, dn14, dn15, dn16, dn17, dn18)
