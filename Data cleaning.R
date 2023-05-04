@@ -26,7 +26,7 @@ dn09 <- dn09 %>%
          wage = tn21,
          ss_comp = tn31,
          ss_cont = tn91,
-         pretax_profit = kqkd17) 
+         pretax_profit = kqkd17)
 
 dn10 <- dn10 %>% 
   rename(vsic = nganh_kd,
@@ -160,25 +160,23 @@ dn18 <- dn18 %>%
 dn0818 <- c("dn08", "dn09", "dn10", "dn11", "dn12", "dn13", "dn14", "dn15", "dn16", "dn17", "dn18")
 
 for(i in dn0818){
-  
-  assign(i, get(i) %>% 
+
+  assign(i, get(i) %>%
            mutate(fworkers = n_fworkers/ n_workers,
                   fworkers_eoy = n_fworkers_eoy/n_workers_eoy))
-  
+
   if(i %in% c("dn08", "dn09", "dn10", "dn11", "dn12", "dn13", "dn14", "dn15")){
     assign(i, get(i) %>%
              mutate(finformal = n_finformal/n_informal,
-                    f_ss = n_fworkers_ss/n_workers_ss) %>% 
-             filter(finformal >= 0,
-                    finformal <= 1))
+                    f_ss = n_fworkers_ss/n_workers_ss))
   }
 
   if(i %in% c("dn08", "dn09", "dn10", "dn12")){
-    
+
     assign(i, get(i) %>%
              select(tinh, huyen, xa, madn, macs, ma_thue, lhdn, namsxkd, vsic, n_workers, n_fworkers, n_fworkers_eoy, n_informal, n_finformal, n_workers_ss, n_fworkers_ss, wage, ss_comp, ss_cont, pretax_profit, fworkers, fworkers_eoy, f_ss, finformal))
   }
-  
+
   if(i %in% c("dn11", "dn13", "dn14", "dn15")){
 
     assign(i, get(i) %>%
@@ -186,29 +184,27 @@ for(i in dn0818){
   }
 
   if(i %in% c("dn16")){
-    
+
     assign(i, get(i) %>%
              select(tinh, huyen, xa, ma_thue, lhdn, vsic, n_workers, n_fworkers, n_fworkers_eoy, n_informal, n_workers_ss, wage, ss_comp, ss_cont, pretax_profit, fworkers, fworkers_eoy))
-    
+
   }
-  
+
     if(i %in% c("dn17", "dn18")){
 
     assign(i, get(i) %>%
              select(tinh, huyen, xa, ma_thue, namsxkd, lhdn, vsic, n_workers, n_fworkers, n_fworkers_eoy, n_informal, n_workers_ss, wage, ss_comp, ss_cont, pretax_profit, fworkers, fworkers_eoy))
 
   }
-  
-  assign(i, get(i) %>% 
-           mutate(n_informal = ifelse(is.na(n_informal), 0, n_informal),
-                  n_workers = ifelse(is.na(n_workers), 0, n_workers),
-                  total_workers = n_informal + n_workers) %>% 
-           replace(is.na(.), 0) %>% 
-           mutate(across(vsic, as.numeric)) %>% 
-           filter(fworkers <= 1,
-                  fworkers >= 0,
-                  fworkers_eoy <= 1,
-                  fworkers_eoy >= 0))
+
+  assign(i, get(i) %>%
+           # mutate(n_informal = ifelse(is.na(n_informal), 0, n_informal),
+           #        n_workers = ifelse(is.na(n_workers), 0, n_workers),
+           #        total_workers = n_informal + n_workers) %>%
+           # replace(is.na(.), 0) %>%
+           # # mutate_all(~ifelse(is.infinite(.), 0, .)) %>%
+           mutate_if(is.numeric, ~ifelse(is.infinite(.), 0, .)) %>% 
+           mutate(across(vsic, as.numeric)))
   
 }
 
