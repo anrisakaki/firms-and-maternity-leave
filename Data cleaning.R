@@ -203,8 +203,17 @@ for(i in dn0818){
            #        total_workers = n_informal + n_workers) %>%
            # replace(is.na(.), 0) %>%
            # # mutate_all(~ifelse(is.infinite(.), 0, .)) %>%
-           mutate_if(is.numeric, ~ifelse(is.infinite(.), 0, .)) %>% 
+           mutate_if(is.numeric, ~ifelse(is.infinite(.), 0, .)) %>%
            mutate(across(vsic, as.numeric)))
+
+  if(i %in% c("d12", "dn13", "dn14", "dn15", "dn16", "dn17", "dn18")){
+    
+    assign(i, get(i) %>% 
+             rename(ma_thue1 = ma_thue) %>% 
+             mutate(ma_thue2 = substr(ma_thue1, 10, 10),
+                    ma_thue = substr(ma_thue1, 1, 9)))          
+    
+  }  
   
 }
 
