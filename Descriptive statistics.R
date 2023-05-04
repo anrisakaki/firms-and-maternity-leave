@@ -2,10 +2,10 @@
 
 yearly_avg <- dn %>% 
   group_by(year) %>% 
-  summarise(avg_fworkers = mean(fworkers),
-            avg_fworkers_eoy = mean(fworkers_eoy),
-            avg_finformal = mean(finformal),
-            avg_f_ss = mean(f_ss))
+  summarise(avg_fworkers = mean(fworkers, na.rm = T),
+            avg_fworkers_eoy = mean(fworkers_eoy, na.rm = T),
+            avg_finformal = mean(finformal, na.rm = T),
+            avg_f_ss = mean(f_ss, na.rm = T))
 
 # Visualising data  
 
