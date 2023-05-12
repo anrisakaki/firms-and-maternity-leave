@@ -37,3 +37,4 @@ etable(list(
   feols(pretax_profit ~ fworkers_12 + post + did | id,
         dn1315)  
 ), tex = T)
+
