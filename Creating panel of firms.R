@@ -1,110 +1,45 @@
-#############################
-# CREATING A PANEL OF FIRMS #
-#############################
+####################################
+# Creating a panel for 2012 - 2018 #
+####################################
 
-for(i in dn0818){
-  
-  if(i %in% c("dn08", "dn09", "dn10", "dn12")){
-    
-    assign(i, get(i) %>% 
-             group_by(tinh, madn, ma_thue, namsxkd) %>% 
-             mutate(id1 = cur_group_id()) %>% 
-             group_by(tinh, madn, ma_thue) %>%
-             mutate(id2 = cur_group_id()) %>% 
-             group_by(tinh, ma_thue) %>% 
-             mutate(id3 = cur_group_id()) %>% 
-             group_by(tinh, ma_thue, namsxkd) %>% 
-             mutate(id4 = cur_group_id())
-           )
-  }
-  
-  if(i %in% c("dn11", "dn13", "dn14", "dn15")){
-    
-    assign(i, get(i) %>% 
-             group_by(tinh, madn, ma_thue) %>% 
-             mutate(id2 = cur_group_id()) %>% 
-             group_by(tinh, ma_thue) %>% 
-             mutate(id3 = cur_group_id()))
-  }  
-  
-  if(i %in% c("dn16")){
-    
-    assign(i, get(i) %>% 
-             group_by(tinh, ma_thue) %>% 
-             mutate(id3 = cur_group_id()))
-  }  
-  
-  if(i %in% c("dn17", "dn18")){
-    
-    assign(i, get(i) %>% 
-             group_by(tinh, ma_thue, namsxkd) %>% 
-             mutate(id4 = cur_group_id()) %>% 
-             group_by(tinh, ma_thue) %>% 
-             mutate(id3 = cur_group_id()))
-  }
-}
+id12 <- dn12 %>% 
+  select(tinh, huyen, xa, ma_thue, madn, namsxkd) %>% 
+  rename(ma_thue1 = ma_thue)
+id18 <- dn18 %>% 
+  select(tinh, huyen, xa, ma_thue1, namsxkd)
 
-id08 <- dn08
-id09 <- dn09
-id10 <- dn10
-id11 <- dn11
-id12 <- dn12
-id13 <- dn13
-id14 <- dn14
-id15 <- dn15
-id16 <- dn16
-id17 <- dn17
-id18 <- dn18
-
-id <- c("id08", "id09", "id10", "id11", "id12", "id13", "id14", "id15", "id16", "id17", "id18")
-
-for(i in id){
-  
-  if(i %in% c("id08", "id09", "id10", "id12")){
-    
-    assign(i, get(i) %>% 
-             select(tinh, huyen, xa, madn, ma_thue, namsxkd, id1, id2, id3, id4))
-    
-  }
-  
-  if(i %in% c("id11","id13", "id14", "id15")){
-    
-    assign(i, get(i) %>% 
-             select(tinh, huyen, xa, madn, ma_thue, id2, id3))
-    
-  }    
-  
-  if(i %in% c("id17", "id18")){
-    
-    assign(i, get(i) %>% 
-             select(tinh, huyen, xa, ma_thue, namsxkd, id4, id3))
-    
-  }  
-  
-  if(i %in% c("id16")){
-    
-    assign(i, get(i) %>% 
-             select(tinh, huyen, xa, ma_thue, id3))
-    
-  }   
-}
-
-# getting namsxkd for 2011 dataset using 2012 dataset 
-
-id1112_madn <- left_join(id12, id11, by = "madn", multiple = "all") %>% 
+id1218 <- merge(id12, id18, by = "ma_thue1") %>% 
   mutate(correct_tinh = ifelse(tinh.x == tinh.y, 1, 0),
          correct_huyen = ifelse(huyen.x == huyen.y, 1, 0),
          correct_xa = ifelse(xa.x == xa.y, 1, 0),
-         correct_ma_thue = ifelse(ma_thue.x == ma_thue.y, 1, 0),
-         correct_thx = ifelse((correct_tinh + correct_huyen + correct_xa) == 3, 1, 0)) %>% 
-  filter(namsxkd != "NA")
+         correct_namsxkd = ifelse(namsxkd.x == namsxkd.y, 1, 0),
+         correct_thx = ifelse((correct_tinh + correct_huyen + correct_xa + correct_namsxkd) == 4, 1, 0))
 
-namsxkd_11 <- id1112_madn %>% select(tinh.x, huyen.x, xa.x, madn, namsxkd) %>% 
+id1218_correct <- id1218 %>% filter(correct_thx == 1) %>% 
+  distinct() %>% 
+  select(tinh.x, huyen.x, xa.x, ma_thue1) %>% 
   rename(tinh = tinh.x,
          huyen = huyen.x,
-         xa = xa.x)
+         xa = xa.x) %>% 
+  group_by(tinh, huyen, ma_thue1) %>% 
+  mutate(id = cur_group_id()) 
 
-dn11 <- left_join(dn11, namsxkd_11, by = c("tinh", "huyen", "xa", "madn"), multiple = "all")
+# filtering based on observations with correct geographical indicators 
+id1218_incorrect <- id1218 %>%
+  filter(correct_thx == 0) %>% 
+  mutate(correct_tinh = ifelse(tinh.x == tinh.y, 1, 0),
+         correct_huyen = ifelse(huyen.x == huyen.y, 1, 0),
+         correct_xa = ifelse(xa.x == xa.y, 1, 0),
+         correct_namsxkd = ifelse(namsxkd.x == namsxkd.y, 1, 0),
+         correct_thx = ifelse((correct_tinh + correct_huyen + correct_xa) == 3, 1, 0))  %>% 
+  filter(correct_thx == 1) %>% 
+  distinct()
+
+# Conclude that individual panels should be made using 'tinh, huyen, xa, ma_thue' 
+
+####################################
+# Creating a panel for 2008 - 2018 #
+####################################
 
 # Only retaining observations kept between 2008 and 2018 
 
@@ -119,4 +54,23 @@ panel0815 <- merge(panel15, panel08, by = "madn") %>%
          correct_thx = ifelse((correct_tinh + correct_huyen + correct_xa + correct_ma_thue) == 4, 1, 0))  
 
 panel0815_correct <- panel0815 %>% filter(correct_thx == 1)
-panel0815_incorrect <- panel0815 %>% filter(correct_thx == 0)
+panel0815_incorrect <- panel0815 %>% filter(correct_thx == 0) # most incorrect matches are at the huyen and xa level. 
+
+# create unique id based on tinh, ma_thue, madn
+
+panel0815_id <- panel0815 %>% 
+  select(tinh.x, madn, ma_thue.x) %>% 
+  rename(tinh = tinh.x,
+         ma_thue = ma_thue.x) %>% 
+  group_by(tinh, madn, ma_thue) %>% 
+  mutate(id = cur_group_id()) %>% 
+  distinct()
+
+for(i in dn0818){
+  
+  if(i %in% c("dn08", "dn09", "dn10", "dn11", "dn12", "dn13", "dn14", "dn15"))
+  
+  assign(i, get(i) %>% 
+           group_by(tinh, madn, ma_thue) %>% 
+           mutate(id = cur_group_id()))
+}
