@@ -1,5 +1,7 @@
 # Summary of avg. share of female workers for each yer 
 
+dn <- bind_rows(dn08, dn09, dn10, dn11, dn12, dn13, dn14, dn15, dn16, dn17, dn18)
+
 yearly_avg <- dn %>% 
   group_by(year) %>% 
   summarise(avg_fworkers = mean(fworkers, na.rm = T),
