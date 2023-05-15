@@ -170,6 +170,12 @@ for(i in dn0818){
              mutate(finformal = n_finformal/n_informal,
                     f_ss = n_fworkers_ss/n_workers_ss))
   }
+  
+  if(i %in% c("dn08", "dn09", "dn10", "dn11")){
+    assign(i, get(i) %>%
+             mutate(ma_thue = paste0(ma_thue, ma_thue2, sep = "")))
+  } 
+  
 
   if(i %in% c("dn08", "dn09", "dn10", "dn12")){
 
@@ -201,14 +207,6 @@ for(i in dn0818){
            mutate_if(is.numeric, ~ifelse(is.infinite(.), 0, .)) %>%
            mutate(across(vsic, as.numeric)))
 
-  if(i %in% c("d12", "dn13", "dn14", "dn15", "dn16", "dn17", "dn18")){
-    
-    assign(i, get(i) %>% 
-             rename(ma_thue1 = ma_thue) %>% 
-             mutate(ma_thue2 = substr(ma_thue1, 10, 10),
-                    ma_thue = substr(ma_thue1, 1, 9)))          
-  }  
-  
 }
 
 dn08 <- dn08 %>% mutate(year = 2008)
