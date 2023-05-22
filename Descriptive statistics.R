@@ -1,6 +1,8 @@
 # Summary of avg. share of female workers for each yer 
 
-dn <- bind_rows(dn08, dn09, dn10, dn11, dn12, dn13, dn14, dn15, dn16, dn17, dn18)
+dn <- bind_rows(dn08, dn09, dn10, dn11, dn12, dn13, dn14, dn15, dn16, dn17, dn18) %>% 
+  group_by(tinh, huyen, xa, ma_thue) %>% 
+  mutate(id = cur_group_id())
 
 yearly_avg <- dn %>% 
   group_by(year) %>% 
@@ -32,4 +34,3 @@ ggplot(dplyr::filter(yearly_avg, year < 2016), aes(x=factor(year), y=avg_finform
         panel.background = element_blank()) + 
   labs(x = "Year",
        y = "Average share of informal workers, female (%)") 
-
