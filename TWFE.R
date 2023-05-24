@@ -65,13 +65,15 @@ etable(list(
 ), tex = T)
 
 etable(list(
+  feols(log(n_workers) ~ fworkers_12 + post + did | id,
+        dn1315),  
   feols(fworkers ~ fworkers_12 + post + did | id,
         dn1315),
   feols(fworkers_eoy ~ fworkers_12 + post + did | id,
         dn1315),
   feols(finformal ~ fworkers_12 + post + did | id,
         dn1315),
-  feols(pretax_profit ~ fworkers_12 + post + did | id,
+  feols(log(pretax_profit) ~ fworkers_12 + post + did | id,
         dn1315)  
 ), tex = T)
 
@@ -124,7 +126,7 @@ iplot(feols(finformal ~ i(year, fworkers_12, 2012) | id + year,
 dev.off()
 
 png("es_pretax_profit.png")
-iplot(feols(pretax_profit ~ i(year, fworkers_12, 2012) | id + year,
+iplot(feols(log(pretax_profit) ~ i(year, fworkers_12, 2012) | id + year,
             dn0815,
-            vcov = ~id), ylim = c(-10000, 10000), xlab = "Year", xlim = c(2008, 2017))
+            vcov = ~id), xlab = "Year", ylim = c(-0.5, -0.07), xlim = c(2008, 2017))
 dev.off()
