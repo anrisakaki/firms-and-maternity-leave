@@ -10,13 +10,13 @@ for(i in dn0818){
   
   if(i %in% c("dn13", "dn14", "dn15")){
     
-    assign(i, left_join(get(i), fworkers_12, by = c("tinh", "huyen", "xa", "madn", "ma_thue"), multiple = "all"))
+    assign(i, left_join(get(i), fworkers_12, by = c("tinh", "huyen", "xa", "madn", "ma_thue")))
     
   }
   
   if(i %in% c("dn16", "dn17", "dn18")){
     
-    assign(i, left_join(get(i), fworkers_12, by = c("tinh", "huyen", "xa", "ma_thue"), multiple = "all"))
+    assign(i, left_join(get(i), fworkers_12, by = c("tinh", "huyen", "xa", "ma_thue")))
     
   }  
   
@@ -30,20 +30,42 @@ dn1315 <- bind_rows(dn13, dn14, dn15, dn16, dn17, dn18) %>%
 
 duplicates <- dn1315 %>% dplyr::group_by(tinh, huyen, xa, madn, ma_thue, id, fworkers_12, year) %>%
   dplyr::summarise(n = dplyr::n(), .groups = "drop") %>%
-  dplyr::filter(n > 1L) 
+  dplyr::filter(n > 1L) %>% 
+  select(tinh, huyen, xa, madn, ma_thue, id)
+  
 
-########################
-# DESCRIPTIVE EVIDENCE #
-########################
+dn1315 <- anti_join(dn1315, duplicates, by = c("tinh", "huyen", "xa", "madn", "ma_thue", "id"))
 
-dn1315_fintensity <- dn1315 %>% 
-  distinct() %>% 
-  select(id, year, fworkers, fworkers_12) %>% 
-  pivot_wider(names_from = year, values_from = fworkers, values_fn = mean) %>% 
-  rename(y2013 = 8,
-         y2014 = 9,
-         y2015 = 10) %>% 
-  filter(!is.na(fworkers_12))
+save(dn1315, file = "dn1315.rda")
+
+##############################
+# SETTING UP FOR EVENT STUDY #
+##############################
+
+for(i in dn0818){
+  
+  if(i %in% c("dn08", "dn09", "dn10", "dn11")){
+    
+    assign(i, left_join(get(i), fworkers_12, by = c("tinh", "huyen", "xa", "madn", "ma_thue")))
+    
+  }
+  
+}
+
+dn12 <- dn12 %>% mutate(fworkers_12 = fworkers)
+
+dn0815 <- bind_rows(dn08, dn09, dn10, dn11, dn12, dn13, dn14, dn15, dn16, dn17, dn18) %>% 
+  group_by(tinh, huyen, xa, ma_thue) %>% 
+  mutate(id = cur_group_id())
+
+duplicates <- dn0815 %>% dplyr::group_by(tinh, huyen, xa, madn, ma_thue, id, fworkers_12, year) %>%
+  dplyr::summarise(n = dplyr::n(), .groups = "drop") %>%
+  dplyr::filter(n > 1L) %>% 
+  select(tinh, huyen, xa, madn, ma_thue, id)
+
+dn0815 <- anti_join(dn0815, duplicates, by = c("tinh", "huyen", "xa", "madn", "ma_thue", "id"))
+
+save(dn0815, file = "dn0815.rda")
 
 ########
 # TWFE #
@@ -55,51 +77,20 @@ setFixest_coefplot(dict = dict, grid = F, zero.par = list(type="dotted", col = "
 
 etable(list(
   feols(fworkers ~ fworkers_12 + post + did | id,
-        subset(dn1315, year < 2016)),
+        dn1315),
   feols(fworkers_eoy ~ fworkers_12 + post + did | id,
-        subset(dn1315, year < 2016)),
+        dn1315),
   feols(finformal ~ fworkers_12 + post + did | id,
+        subset(dn1315, year < 2016)),
+  feols(f_ss ~ fworkers_12 + post + did | id,
         subset(dn1315, year < 2016)),
   feols(pretax_profit ~ fworkers_12 + post + did | id,
-        subset(dn1315, year < 2016))  
-), tex = T)
-
-etable(list(
-  feols(log(n_workers) ~ fworkers_12 + post + did | id,
-        dn1315),  
-  feols(fworkers ~ fworkers_12 + post + did | id,
-        dn1315),
-  feols(fworkers_eoy ~ fworkers_12 + post + did | id,
-        dn1315),
-  feols(finformal ~ fworkers_12 + post + did | id,
-        dn1315),
-  feols(log(pretax_profit) ~ fworkers_12 + post + did | id,
         dn1315)  
 ), tex = T)
 
 ###############
 # EVENT STUDY #
 ###############
-
-for(i in dn0818){
-  
-  if(i %in% c("dn08", "dn09", "dn10", "dn11")){
-
-    assign(i, left_join(get(i), fworkers_12, by = c("tinh", "huyen", "xa", "madn", "ma_thue"), multiple = "all"))
-
-  }
-  
-}
-
-dn12 <- dn12 %>% mutate(fworkers_12 = fworkers)
-
-dn0815 <- bind_rows(dn08, dn09, dn10, dn11, dn12, dn13, dn14, dn15, dn16, dn17, dn18) %>% 
-  group_by(tinh, huyen, xa, ma_thue) %>% 
-  mutate(id = cur_group_id())
-
-##########################
-# PLOTTING EVENT STUDIES #
-##########################
 
 png("es_nworkers.png")
 iplot(feols(log(n_workers) ~ i(year, fworkers_12, 2012) | id + year,
@@ -110,23 +101,28 @@ dev.off()
 png("es_fworkers.png")
 iplot(feols(fworkers ~ i(year, fworkers_12, 2012) | id + year,
             dn0815,
-            vcov = ~id), ylim = c(-0.55, -0.3), xlab = "Year")
+            vcov = ~id), ylim = c(-0.5, -0.2), xlab = "Year")
 dev.off()
 
 png("es_fworkers_eoy.png")
 iplot(feols(fworkers_eoy ~ i(year, fworkers_12, 2012) | id + year,
             dn0815,
-            vcov = ~id), ylim = c(-0.5, -0.2), xlab = "Year")
+            vcov = ~id), ylim = c(-0.5, -0.1), xlab = "Year")
 dev.off()
 
 png("es_finformal.png")
 iplot(feols(finformal ~ i(year, fworkers_12, 2012) | id + year,
-            dn0815,
-            vcov = ~id), ylim = c(-0.35, -0.05), xlab = "Year", xlim = c(2008, 2015))
+            subset(dn0815, year < 2016),
+            vcov = ~id), xlab = "Year")
+dev.off()
+
+png("es_f_ss.png")
+iplot(feols(f_ss ~ i(year, fworkers_12, 2012) | id + year,
+            subset(dn0815, year < 2016),
+            vcov = ~id), xlab = "Year")
 dev.off()
 
 png("es_pretax_profit.png")
 iplot(feols(log(pretax_profit) ~ i(year, fworkers_12, 2012) | id + year,
-            dn0815,
-            vcov = ~id), xlab = "Year", ylim = c(-0.5, -0.07), xlim = c(2008, 2017))
+            dn0815), xlab = "Year")
 dev.off()
