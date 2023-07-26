@@ -1,40 +1,22 @@
-############################################
-# SETTING UP FOR DIFFERENCE-IN-DIFFERENCES #
-############################################
-
-fworkers_12 <- dn12 %>% 
-  select(tinh, huyen, xa, madn, ma_thue, fworkers) %>% 
-  rename(fworkers_12 = fworkers)
-
-for(i in dn0818){
-  
-  if(i %in% c("dn13", "dn14", "dn15")){
-    
-    assign(i, left_join(get(i), fworkers_12, by = c("tinh", "huyen", "xa", "madn", "ma_thue"), multiple = "all"))
-    
-  }
-  
-  if(i %in% c("dn16", "dn17", "dn18")){
-    
-    assign(i, left_join(get(i), fworkers_12, by = c("tinh", "huyen", "xa", "ma_thue"), multiple = "all"))
-    
-  }  
-  
-}
-
-dn1315 <- bind_rows(dn13, dn14, dn15, dn16, dn17, dn18) %>% 
-  group_by(tinh, huyen, xa, ma_thue) %>% 
-  mutate(id = cur_group_id()) %>% 
-  mutate(post = ifelse(year > 2013, 1, 0),
-         did = post*fworkers_12)
-
-duplicates <- dn1315 %>% dplyr::group_by(tinh, huyen, xa, madn, ma_thue, id, fworkers_12, year) %>%
-  dplyr::summarise(n = dplyr::n(), .groups = "drop") %>%
-  dplyr::filter(n > 1L) 
-
 ########################
 # DESCRIPTIVE EVIDENCE #
 ########################
+
+# Distribution of female intensiveness of firms 
+
+ggplot(fworkers_12, aes(fworkers_12)) + geom_density()
+
+quantile(fworkers_12$fworkers_12, probs = c(0.25, 0.5, 0.75), na.rm = T)
+ 
+
+# Q1 = 0.2452830
+# Q2 = 0.3333333
+# Q3 = 0.4761905
+
+dn1315 <- dn1315 %>% 
+  mutate(q1 = ifelse(fworkers_12 <= 0.2452830, 1, 0),
+         q2 = ifelse(fworkers_12 >= 0.3333333 & fworkers_12 <0.4761905, 1, 0),
+         q2 = ifelse(fworkers_12 >= 0.3333333 & fworkers_12 <0.4761905, 1, 0))
 
 dn1315_fintensity <- dn1315 %>% 
   distinct() %>% 
@@ -44,3 +26,4 @@ dn1315_fintensity <- dn1315 %>%
          y2014 = 9,
          y2015 = 10) %>% 
   filter(!is.na(fworkers_12))
+
