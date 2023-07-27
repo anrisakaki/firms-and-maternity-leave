@@ -76,8 +76,6 @@ dict = c("fworkers_12" = "Share of female workers in 2012")
 setFixest_coefplot(dict = dict, grid = F, zero.par = list(type="dotted", col = "darkblue", lty = 2), main = "")
 
 etable(list(
-  feols(fworkers ~ fworkers_12 + post + did | id,
-        dn1315),
   feols(fworkers_eoy ~ fworkers_12 + post + did | id,
         dn1315),
   feols(finformal ~ fworkers_12 + post + did | id,
@@ -98,16 +96,16 @@ iplot(feols(log(n_workers) ~ i(year, fworkers_12, 2012) | id + year,
             vcov = ~id), xlab = "Year")
 dev.off()
 
-png("es_fworkers.png")
-iplot(feols(fworkers ~ i(year, fworkers_12, 2012) | id + year,
+png("es_n_informal.png")
+iplot(feols(log(n_informal) ~ i(year, fworkers_12, 2012) | id + year,
             dn0815,
-            vcov = ~id), ylim = c(-0.5, -0.2), xlab = "Year")
+            vcov = ~id), xlab = "Year")
 dev.off()
 
 png("es_fworkers_eoy.png")
 iplot(feols(fworkers_eoy ~ i(year, fworkers_12, 2012) | id + year,
             dn0815,
-            vcov = ~id), ylim = c(-0.5, -0.1), xlab = "Year")
+            vcov = ~id),  xlab = "Year")
 dev.off()
 
 png("es_finformal.png")
@@ -124,5 +122,10 @@ dev.off()
 
 png("es_pretax_profit.png")
 iplot(feols(log(pretax_profit) ~ i(year, fworkers_12, 2012) | id + year,
+            dn0815), xlab = "Year")
+dev.off()
+
+png("es_wage.png")
+iplot(feols(log(wage) ~ i(year, fworkers_12, 2012) | id + year,
             dn0815), xlab = "Year")
 dev.off()
