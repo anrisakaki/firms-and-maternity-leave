@@ -11,7 +11,7 @@ yearly_avg <- dn %>%
 
 # Summarising yearly trends  
 
-ggplot(yearly_avg, aes(x=factor(year), y=avg_fworkers*100)) + 
+ggplot(yearly_avg, aes(x=factor(year), y=avg_fworkers_eoy*100)) + 
   geom_col() + 
   theme_bw() +
   theme(axis.line = element_line(colour = "black"),
