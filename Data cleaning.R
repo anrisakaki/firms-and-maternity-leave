@@ -162,10 +162,13 @@ dn0818 <- c("dn08", "dn09", "dn10", "dn11", "dn12", "dn13", "dn14", "dn15", "dn1
 for(i in dn0818){
 
   assign(i, get(i) %>%
-           mutate(n_fworkers = ifelse(is.na(n_fworkers), 0 , n_fworkers),
+           mutate(
+                  n_fworkers = ifelse(is.na(n_fworkers), 0 , n_fworkers),
                   n_fworkers_eoy = ifelse(is.na(n_fworkers_eoy), 0 , n_fworkers_eoy),
                   n_workers = ifelse(is.na(n_workers), 0 , n_workers),
                   n_workers_eoy = ifelse(is.na(n_workers_eoy), 0 , n_workers_eoy),
+                  n_informal = ifelse(is.na(n_informal), 0, n_informal),
+                  n_workers_ss = ifelse(is.na(n_workers_ss), 0, n_workers_ss),
                   fworkers = n_fworkers/ n_workers,
                   fworkers_eoy = n_fworkers_eoy/n_workers_eoy,
                   fworkers = ifelse(n_workers == 0, NA, fworkers),
@@ -174,10 +177,13 @@ for(i in dn0818){
                   fworkers_eoy = ifelse(n_workers_eoy > 0 & n_fworkers_eoy == 0, 0, fworkers_eoy),
                   across(vsic, as.numeric),
                   fworkers = ifelse(fworkers > 1 | fworkers < 0, NA, fworkers),
-                  fworkers_eoy = ifelse(fworkers_eoy > 1 | fworkers_eoy < 0, NA, fworkers_eoy),
-                  foe = ifelse(lhdn == 11, 1, 0),
-                  soe = ifelse(lhdn == 4, 1, 0),
-                  priv = ifelse(lhdn == 6, 1, 0))
+                  fworkers_eoy = ifelse(fworkers_eoy > 1 | fworkers_eoy < 0, NA, fworkers_eoy)) %>% 
+           mutate(type = case_when(
+             lhdn < 5 ~ "soe",
+             lhdn == 11  ~ "foe",
+             lhdn == 6 | lhdn == 9  ~ "priv",
+             TRUE ~ NA  
+           ))
          
          )
 
@@ -185,8 +191,6 @@ for(i in dn0818){
     assign(i, get(i) %>%
              mutate(n_finformal = ifelse(is.na(n_finformal), 0, n_finformal),
                     n_fworkers_ss = ifelse(is.na(n_fworkers_ss), 0, n_fworkers_ss),
-                    n_informal = ifelse(is.na(n_informal), 0, n_informal),
-                    n_workers_ss = ifelse(is.na(n_workers_ss), 0 , n_workers_ss),
                     finformal = n_finformal/n_informal,
                     f_ss = n_fworkers_ss/n_workers_ss,
                     finformal = ifelse(n_workers == 0, NA, finformal),
@@ -207,26 +211,26 @@ for(i in dn0818){
   if(i %in% c("dn08", "dn09", "dn10", "dn12")){
 
     assign(i, get(i) %>%
-             select(tinh, huyen, xa, madn, macs, ma_thue, lhdn, namsxkd, vsic, n_workers, n_fworkers, n_fworkers_eoy, n_informal, n_finformal, n_workers_ss, n_fworkers_ss, wage, ss_comp, ss_cont, pretax_profit, fworkers, fworkers_eoy, f_ss, finformal, foe, soe, priv))
+             select(tinh, huyen, xa, madn, macs, ma_thue, lhdn, namsxkd, vsic, n_workers, n_fworkers, n_fworkers_eoy, n_informal, n_finformal, n_workers_ss, n_fworkers_ss, wage, ss_comp, ss_cont, pretax_profit, fworkers, fworkers_eoy, f_ss, finformal, type))
   }
 
   if(i %in% c("dn11", "dn13", "dn14", "dn15")){
 
     assign(i, get(i) %>%
-             select(tinh, huyen, xa, madn, macs, ma_thue, lhdn, vsic, n_workers, n_fworkers, n_fworkers_eoy, n_informal, n_finformal, n_workers_ss, n_fworkers_ss, wage, ss_comp, ss_cont, pretax_profit, fworkers, fworkers_eoy, f_ss, finformal, foe, soe, priv))
+             select(tinh, huyen, xa, madn, macs, ma_thue, lhdn, vsic, n_workers, n_fworkers, n_fworkers_eoy, n_informal, n_finformal, n_workers_ss, n_fworkers_ss, wage, ss_comp, ss_cont, pretax_profit, fworkers, fworkers_eoy, f_ss, finformal, type))
   }
 
   if(i %in% c("dn16")){
 
     assign(i, get(i) %>%
-             select(tinh, huyen, xa, ma_thue, lhdn, vsic, n_workers, n_fworkers, n_fworkers_eoy, n_informal, n_workers_ss, wage, ss_comp, ss_cont, pretax_profit, fworkers, fworkers_eoy, foe, soe, priv))
+             select(tinh, huyen, xa, ma_thue, lhdn, vsic, n_workers, n_fworkers, n_fworkers_eoy, n_informal, n_workers_ss, wage, ss_comp, ss_cont, pretax_profit, fworkers, fworkers_eoy, type))
 
   }
 
   if(i %in% c("dn17", "dn18")){
 
     assign(i, get(i) %>%
-             select(tinh, huyen, xa, ma_thue, namsxkd, lhdn, vsic, n_workers, n_fworkers, n_fworkers_eoy, n_informal, n_workers_ss, wage, ss_comp, ss_cont, pretax_profit, fworkers, fworkers_eoy, foe, soe, priv))
+             select(tinh, huyen, xa, ma_thue, namsxkd, lhdn, vsic, n_workers, n_fworkers, n_fworkers_eoy, n_informal, n_workers_ss, wage, ss_comp, ss_cont, pretax_profit, fworkers, fworkers_eoy, type))
 
   }
 
@@ -249,4 +253,4 @@ dn <- bind_rows(dn08, dn09, dn10, dn11, dn12, dn13, dn14, dn15, dn16, dn17, dn18
   group_by(tinh, huyen, xa, ma_thue) %>% 
   mutate(id = cur_group_id())
 
-save(dn0818, file = "dn.rda")
+save(dn, file = "dn.rda")
