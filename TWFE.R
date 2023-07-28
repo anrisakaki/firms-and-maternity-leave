@@ -71,24 +71,37 @@ save(dn0815, file = "dn0815.rda")
 # TWFE #
 ########
 
-dict = c("fworkers_12" = "Share of female workers in 2012")
+load("dn1315.rda")
 
-setFixest_coefplot(dict = dict, grid = F, zero.par = list(type="dotted", col = "darkblue", lty = 2), main = "")
+setFixest_dict(c("n_workers" = "No. of workers",
+         "fworkers_eoy" = "Share of workers, female",
+         "n_informal" = "No. of informal workers",
+         "finformal" = "Share of informal workers, female",
+         "n_workers_ss" = "Share of workers receiving SS",
+         "f_ss" = "Share of workers receiving SS, female"))
 
 etable(list(
+  feols(log(n_workers) ~ fworkers_12 + post + did | id,
+        dn1315),  
   feols(fworkers_eoy ~ fworkers_12 + post + did | id,
         dn1315),
+  feols(log(n_informal) ~ fworkers_12 + post + did | id,
+        dn1315),  
   feols(finformal ~ fworkers_12 + post + did | id,
         subset(dn1315, year < 2016)),
-  feols(f_ss ~ fworkers_12 + post + did | id,
+  feols(log(n_workers_ss) ~ fworkers_12 + post + did | id,
         subset(dn1315, year < 2016)),
-  feols(pretax_profit ~ fworkers_12 + post + did | id,
-        dn1315)  
+  feols(f_ss ~ fworkers_12 + post + did | id,
+        subset(dn1315, year < 2016)) 
 ), tex = T)
 
 ###############
 # EVENT STUDY #
 ###############
+
+load("dn0815.rda")
+
+setFixest_coefplot(grid = F, zero.par = list(type="dotted", col = "darkblue", lty = 2), main = "")
 
 png("es_nworkers.png")
 iplot(feols(log(n_workers) ~ i(year, fworkers_12, 2012) | id + year,
@@ -105,27 +118,38 @@ dev.off()
 png("es_fworkers_eoy.png")
 iplot(feols(fworkers_eoy ~ i(year, fworkers_12, 2012) | id + year,
             dn0815,
-            vcov = ~id),  xlab = "Year")
+            vcov = ~id), ylim = c(-0.5, -0.2),  xlab = "Year")
 dev.off()
 
 png("es_finformal.png")
 iplot(feols(finformal ~ i(year, fworkers_12, 2012) | id + year,
             subset(dn0815, year < 2016),
+            vcov = ~id), ylim = c(-0.3, -0.05), xlab = "Year")
+dev.off()
+
+png("es_n_workers_ss.png")
+iplot(feols(log(n_workers_ss) ~ i(year, fworkers_12, 2012) | id + year,
+            dn0815,
             vcov = ~id), xlab = "Year")
 dev.off()
 
 png("es_f_ss.png")
 iplot(feols(f_ss ~ i(year, fworkers_12, 2012) | id + year,
             subset(dn0815, year < 2016),
-            vcov = ~id), xlab = "Year")
-dev.off()
-
-png("es_pretax_profit.png")
-iplot(feols(log(pretax_profit) ~ i(year, fworkers_12, 2012) | id + year,
-            dn0815), xlab = "Year")
+            vcov = ~id), ylim = c(-0.3, -0.07), xlab = "Year")
 dev.off()
 
 png("es_wage.png")
 iplot(feols(log(wage) ~ i(year, fworkers_12, 2012) | id + year,
+            dn0815), xlab = "Year")
+dev.off()
+
+png("es_ss.png")
+iplot(feols(log(ss_cont) ~ i(year, fworkers_12, 2012) | id + year,
+            dn0815), xlab = "Year")
+dev.off()
+
+png("es_ss_comp.png")
+iplot(feols(log(ss_comp) ~ i(year, fworkers_12, 2012) | id + year,
             dn0815), xlab = "Year")
 dev.off()
