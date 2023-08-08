@@ -224,61 +224,68 @@ for(i in dn0818){
              vsic > 93290 ~ "Other",
              TRUE ~ NA_character_  
            )) %>% 
-           mutate(size = case_when(
-             #Microenterprise 
-             Industry == "Agriculture" & n_workers_ss < 11 & total_revenue <= 3000 ~ "Microenterprise",
-             Industry == "Manufacturing" & n_workers_ss < 11 & total_revenue <= 3000 ~ "Microenterprise",
-             Industry == "Construction" & n_workers_ss < 11 & total_revenue <= 3000 ~ "Microenterprise",
-             Industry == "Agriculture" & total_capital <= 3000 ~ "Microenterprise",
-             Industry == "Manufacturing" & total_capital <= 3000 ~ "Microenterprise",
-             Industry == "Construction" & total_capital <= 3000 ~ "Microenterprise",
-             Industry == "Retail" & n_workers_ss < 11 & total_revenue <= 10000 ~ "Microenterprise",
-             Industry == "Hospitality" & n_workers_ss < 11 & total_revenue <= 10000 ~ "Microenterprise",
-             Industry == "Retail" & total_capital <= 3000 ~ "Microenterprise",
-             Industry == "Hospitality" & total_capital <= 3000 ~ "Microenterprise",
-             
-             # Small 
-             # AMC - annual average of 100 ss. employers or fewer & total annual revenue is not more than VND 50billion or total capital is not more than VND 20 billion
-             # RH - annual average of 50 ss. employers or fewer & total annual revenue is not more than VND 100 billion or total capital is not more than VND 50 billion
-
-             Industry == "Agriculture" & n_workers_ss < 101 & n_workers_ss > 10 & total_revenue <= 50000 & total_revenue > 3000 ~ "Small",
-             Industry == "Manufacturing" & n_workers_ss < 101 & n_workers_ss > 10 & total_revenue <= 50000 & total_revenue > 3000 ~ "Small",
-             Industry == "Construction" & n_workers_ss < 101 & n_workers_ss > 10 & total_revenue <= 50000 & total_revenue > 3000 ~ "Small",
-             Industry == "Agriculture" & total_capital > 3000 & total_capital <= 20000 ~ "Small",
-             Industry == "Manufacturing" & total_capital > 3000 & total_capital <= 20000 ~ "Small",
-             Industry == "Construction" & total_capital > 3000 & total_capital <= 20000 ~ "Small",
-             Industry == "Retail" & n_workers_ss > 11 & n_workers_ss < 51 & total_revenue > 10000 &  total_revenue <= 100000 ~ "Small",
-             Industry == "Hospitality" & n_workers_ss > 11 & n_workers_ss < 51 & total_revenue > 10000 & total_revenue <= 100000 ~ "Small",
-             Industry == "Retail" & total_capital <= 50000 & total_capital > 3000 ~ "Small",
-             Industry == "Hospitality" & total_capital <= 50000 & total_capital > 3000 ~ "Small",
-             
-             # Medium 
-             # AMC - annual average of 200 ss. employers or fewer & total annual revenue is not more than VND 200billion or total capital is not more than VND 100 billion
-             # RH - annual average of 100 ss. employers or fewer & total annual revenue is not more than VND 300billion or total capital is not more than VND 100 billion
-             Industry == "Agriculture" & n_workers_ss > 100 & n_workers_ss < 201 & total_revenue > 50000 & total_revenue <= 200000 ~ "Medium",
-             Industry == "Manufacturing" & n_workers_ss > 100 & n_workers_ss < 201 & total_revenue > 50000 & total_revenue <= 200000 ~ "Medium",
-             Industry == "Construction" & n_workers_ss > 100 & n_workers_ss < 201 & total_revenue > 50000 & total_revenue <= 200000 ~ "Medium",
-             Industry == "Agriculture" & total_capital <= 100000 & total_capital > 20000 ~ "Medium", 
-             Industry == "Manufacturing" & total_capital <= 100000 & total_capital > 20000 ~ "Medium",
-             Industry == "Construction" & total_capital <= 100000 & total_capital > 20000 ~ "Medium",
-             Industry == "Retail" & n_workers_ss > 50 & n_workers_ss < 101 & total_revenue <= 300000 & total_revenue > 100000  ~ "Medium",
-             Industry == "Hospitality" & n_workers_ss > 50 & n_workers_ss < 101 & total_revenue <= 300000 & total_revenue > 100000  ~ "Medium",
-             Industry == "Retail" & total_capital > 50000 & total_capital < 100000 ~ "Medium",
-             Industry == "Hospitality" & total_capital > 50000 & total_capital < 100000 ~ "Medium",
-             
-             # Large 
-             Industry == "Agriculture" & n_workers_ss > 200 & total_revenue > 200000 ~ "Large",
-             Industry == "Manufacturing" & n_workers_ss > 200 & total_revenue > 200000 ~ "Large",
-             Industry == "Construction" & n_workers_ss > 200 & total_revenue > 200000 ~ "Large",
-             Industry == "Agriculture" & total_capital > 100000 ~ "Large",
-             Industry == "Manufacturing" & total_capital > 100000 ~ "Large",
-             Industry == "Construction" & total_capital > 100000 ~ "Large",
-             Industry == "Retail" & n_workers_ss > 100 & total_revenue > 300000 ~ "Large",
-             Industry == "Hospitality" & n_workers_ss > 100 & total_revenue > 300000 ~ "Large",
-             Industry == "Retail" & total_capital > 100000 ~ "Large",
-             Industry == "Hospitality" & total_capital > 100000 ~ "Large",
-             TRUE ~ NA  
-           ))
+           # mutate(size = case_when(
+           #   #Microenterprise 
+           #   Industry == "Agriculture" & n_workers_ss < 11 & total_revenue <= 3000 ~ "Microenterprise",
+           #   Industry == "Manufacturing" & n_workers_ss < 11 & total_revenue <= 3000 ~ "Microenterprise",
+           #   Industry == "Construction" & n_workers_ss < 11 & total_revenue <= 3000 ~ "Microenterprise",
+           #   Industry == "Agriculture" & total_capital <= 3000 ~ "Microenterprise",
+           #   Industry == "Manufacturing" & total_capital <= 3000 ~ "Microenterprise",
+           #   Industry == "Construction" & total_capital <= 3000 ~ "Microenterprise",
+           #   Industry == "Retail" & n_workers_ss < 11 & total_revenue <= 10000 ~ "Microenterprise",
+           #   Industry == "Hospitality" & n_workers_ss < 11 & total_revenue <= 10000 ~ "Microenterprise",
+           #   Industry == "Retail" & total_capital <= 3000 ~ "Microenterprise",
+           #   Industry == "Hospitality" & total_capital <= 3000 ~ "Microenterprise",
+           #   
+           #   # Small 
+           #   # AMC - annual average of 100 ss. employers or fewer & total annual revenue is not more than VND 50billion or total capital is not more than VND 20 billion
+           #   # RH - annual average of 50 ss. employers or fewer & total annual revenue is not more than VND 100 billion or total capital is not more than VND 50 billion
+           # 
+           #   Industry == "Agriculture" & n_workers_ss < 101 & n_workers_ss > 10 & total_revenue <= 50000 & total_revenue > 3000 ~ "Small",
+           #   Industry == "Manufacturing" & n_workers_ss < 101 & n_workers_ss > 10 & total_revenue <= 50000 & total_revenue > 3000 ~ "Small",
+           #   Industry == "Construction" & n_workers_ss < 101 & n_workers_ss > 10 & total_revenue <= 50000 & total_revenue > 3000 ~ "Small",
+           #   Industry == "Agriculture" & total_capital > 3000 & total_capital <= 20000 ~ "Small",
+           #   Industry == "Manufacturing" & total_capital > 3000 & total_capital <= 20000 ~ "Small",
+           #   Industry == "Construction" & total_capital > 3000 & total_capital <= 20000 ~ "Small",
+           #   Industry == "Retail" & n_workers_ss > 11 & n_workers_ss < 51 & total_revenue > 10000 &  total_revenue <= 100000 ~ "Small",
+           #   Industry == "Hospitality" & n_workers_ss > 11 & n_workers_ss < 51 & total_revenue > 10000 & total_revenue <= 100000 ~ "Small",
+           #   Industry == "Retail" & total_capital <= 50000 & total_capital > 3000 ~ "Small",
+           #   Industry == "Hospitality" & total_capital <= 50000 & total_capital > 3000 ~ "Small",
+           #   
+           #   # Medium 
+           #   # AMC - annual average of 200 ss. employers or fewer & total annual revenue is not more than VND 200billion or total capital is not more than VND 100 billion
+           #   # RH - annual average of 100 ss. employers or fewer & total annual revenue is not more than VND 300billion or total capital is not more than VND 100 billion
+           #   Industry == "Agriculture" & n_workers_ss > 100 & n_workers_ss < 201 & total_revenue > 50000 & total_revenue <= 200000 ~ "Medium",
+           #   Industry == "Manufacturing" & n_workers_ss > 100 & n_workers_ss < 201 & total_revenue > 50000 & total_revenue <= 200000 ~ "Medium",
+           #   Industry == "Construction" & n_workers_ss > 100 & n_workers_ss < 201 & total_revenue > 50000 & total_revenue <= 200000 ~ "Medium",
+           #   Industry == "Agriculture" & total_capital <= 100000 & total_capital > 20000 ~ "Medium", 
+           #   Industry == "Manufacturing" & total_capital <= 100000 & total_capital > 20000 ~ "Medium",
+           #   Industry == "Construction" & total_capital <= 100000 & total_capital > 20000 ~ "Medium",
+           #   Industry == "Retail" & n_workers_ss > 50 & n_workers_ss < 101 & total_revenue <= 300000 & total_revenue > 100000  ~ "Medium",
+           #   Industry == "Hospitality" & n_workers_ss > 50 & n_workers_ss < 101 & total_revenue <= 300000 & total_revenue > 100000  ~ "Medium",
+           #   Industry == "Retail" & total_capital > 50000 & total_capital < 100000 ~ "Medium",
+           #   Industry == "Hospitality" & total_capital > 50000 & total_capital < 100000 ~ "Medium",
+           #   
+           #   # Large 
+           #   Industry == "Agriculture" & n_workers_ss > 200 & total_revenue > 200000 ~ "Large",
+           #   Industry == "Manufacturing" & n_workers_ss > 200 & total_revenue > 200000 ~ "Large",
+           #   Industry == "Construction" & n_workers_ss > 200 & total_revenue > 200000 ~ "Large",
+           #   Industry == "Agriculture" & total_capital > 100000 ~ "Large",
+           #   Industry == "Manufacturing" & total_capital > 100000 ~ "Large",
+           #   Industry == "Construction" & total_capital > 100000 ~ "Large",
+           #   Industry == "Retail" & n_workers_ss > 100 & total_revenue > 300000 ~ "Large",
+           #   Industry == "Hospitality" & n_workers_ss > 100 & total_revenue > 300000 ~ "Large",
+           #   Industry == "Retail" & total_capital > 100000 ~ "Large",
+           #   Industry == "Hospitality" & total_capital > 100000 ~ "Large",
+           #   TRUE ~ NA  
+           # ))
+         
+         mutate(size = case_when(
+           n_workers_eoy < 10 ~ "Microenterprise",
+           n_workers_eoy > 9 & n_workers_eoy < 50 ~ "Small",
+           n_workers_eoy > 49 & n_workers_eoy < 250 ~ "Medium",
+           n_workers_eoy > 249 ~ "Large"
+         ))
          )
 
   if(i %in% c("dn08", "dn09", "dn10", "dn11", "dn12", "dn13", "dn14", "dn15")){
