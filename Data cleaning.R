@@ -11,7 +11,9 @@ dn08 <- dn08 %>%
          wage = tn1,
          ss_comp = tn3,
          ss_cont = tn5,
-         pretax_profit = kqkd9)
+         total_revenue = kqkd1,
+         pretax_profit = kqkd9,
+         total_capital = ts232)
 
 dn09 <- dn09 %>% 
   rename(vsic = nganh_kd,
@@ -26,7 +28,9 @@ dn09 <- dn09 %>%
          wage = tn11,
          ss_comp = tn31,
          ss_cont = tn91,
-         pretax_profit = kqkd17)
+         total_revenue = kqkd1, 
+         pretax_profit = kqkd17,
+         total_capital = ts212)
 
 dn10 <- dn10 %>% 
   rename(vsic = nganh_kd,
@@ -41,7 +45,9 @@ dn10 <- dn10 %>%
          wage = tn1,
          ss_comp = tn3,
          ss_cont = tn5,
-         pretax_profit = kqkd17)
+         total_revenue = kqkd1, 
+         pretax_profit = kqkd17,
+         total_capital = ts212)
 
 dn11 <- dn11 %>% 
   rename(vsic = nganh_kd,
@@ -56,7 +62,9 @@ dn11 <- dn11 %>%
          wage = tn1,
          ss_comp = tn4,
          ss_cont = tn5,
-         pretax_profit = kqkd20)
+         total_revenue = kqkd1, 
+         pretax_profit = kqkd20,
+         total_capital = ts382)
 
 dn12 <- dn12 %>% 
   rename(vsic = nganh_kd,
@@ -71,7 +79,9 @@ dn12 <- dn12 %>%
          wage = tn1,
          ss_comp = tn4,
          ss_cont = tn5,
-         pretax_profit = kqkd22)  
+         total_revenue = kqkd1,
+         pretax_profit = kqkd22,
+         total_capital = ts192)  
 
 dn13 <- dn13 %>% 
   rename(vsic = nganh_kd,
@@ -86,7 +96,9 @@ dn13 <- dn13 %>%
          wage = tn1,
          ss_comp = tn4,
          ss_cont = tn5,
-         pretax_profit = kqkd22)  
+         total_revenue = kqkd1,
+         pretax_profit = kqkd22,
+         total_capital = ts252)  
 
 dn14 <- dn14 %>% 
   rename(vsic = nganh_kd,
@@ -101,7 +113,9 @@ dn14 <- dn14 %>%
          wage = tn1,
          ss_comp = tn2,
          ss_cont = tn3,
-         pretax_profit = kqkd22) 
+         total_revenue = kqkd1,
+         pretax_profit = kqkd22,
+         total_capital = ts252) 
 
 dn15 <- dn15 %>% 
   rename(vsic = nganh_kd,
@@ -115,8 +129,10 @@ dn15 <- dn15 %>%
          n_finformal = ld32,
          wage = tn1,
          ss_comp = tn2,
-         ss_cont = tn3,         
-         pretax_profit = kqkd20)   
+         ss_cont = tn3,     
+         total_revenue = kqkd1,
+         pretax_profit = kqkd20,
+         total_capital = ts152)   
 
 dn16 <- dn16 %>% 
   rename(vsic = nganh_kd,
@@ -128,8 +144,10 @@ dn16 <- dn16 %>%
          n_informal = ld41,
          wage = tn1,
          ss_comp = tn2,
-         ss_cont = tn3,         
-         pretax_profit = kqkd20)   
+         ss_cont = tn3,   
+         total_revenue = kqkd1,
+         pretax_profit = kqkd20,
+         total_capital = ts302)   
 
 dn17 <- dn17 %>% 
   rename(vsic = nganh_kd,
@@ -141,8 +159,10 @@ dn17 <- dn17 %>%
          n_informal = ld41,
          wage = tn1,
          ss_comp = tn2,
-         ss_cont = tn3,         
-         pretax_profit = kqkd7)   
+         ss_cont = tn3, 
+         total_revenue = kqkd1,
+         pretax_profit = kqkd7,
+         total_capital = ts122)   
 
 dn18 <- dn18 %>% 
   rename(vsic = nganh_kd,
@@ -154,8 +174,10 @@ dn18 <- dn18 %>%
          n_informal = ld41,
          wage = tn1,
          ss_comp = tn2,
-         ss_cont = tn3,         
-         pretax_profit = kqkd7)
+         ss_cont = tn3,    
+         total_revenue = kqkd1,
+         pretax_profit = kqkd7,
+         total_capital = ts122)
 
 dn0818 <- c("dn08", "dn09", "dn10", "dn11", "dn12", "dn13", "dn14", "dn15", "dn16", "dn17", "dn18")
 
@@ -181,10 +203,82 @@ for(i in dn0818){
            mutate(type = case_when(
              lhdn < 5 ~ "soe",
              lhdn == 11  ~ "foe",
-             lhdn == 6 | lhdn == 9  ~ "priv",
+             lhdn == 6  ~ "priv",
+             lhdn == 9 ~ "priv",
+             TRUE ~ NA  
+           )) %>% 
+           mutate(Industry = case_when(
+             vsic < 3230 ~ "Agriculture",
+             vsic > 3230 & vsic < 10100 ~ "Mining",
+             vsic > 9900 & vsic < 41000 ~ "Manufacturing",
+             vsic > 39000 & vsic < 45110 ~ "Construction",
+             vsic > 43900 & vsic < 49110 ~ "Retail",
+             vsic > 47990 & vsic < 55100 ~ "Transport",
+             vsic > 53200 & vsic < 58110 ~ "Hospitality",
+             vsic > 56300 & vsic < 64110 ~ "Telecommunications",
+             vsic > 63290 & vsic < 84110 ~ "Financial and Adminstrative Services",
+             vsic > 82990 & vsic < 85100 ~ "Civil Service",
+             vsic > 84300 & vsic < 86100 ~ "Education",
+             vsic > 85600 & vsic < 90000 ~ "Health",
+             vsic > 88900 & vsic < 94110 ~ "Art and Entertainment",
+             vsic > 93290 ~ "Other",
+             TRUE ~ NA_character_  
+           )) %>% 
+           mutate(size = case_when(
+             #Microenterprise 
+             Industry == "Agriculture" & n_workers_ss < 11 & total_revenue <= 3000 ~ "Microenterprise",
+             Industry == "Manufacturing" & n_workers_ss < 11 & total_revenue <= 3000 ~ "Microenterprise",
+             Industry == "Construction" & n_workers_ss < 11 & total_revenue <= 3000 ~ "Microenterprise",
+             Industry == "Agriculture" & total_capital <= 3000 ~ "Microenterprise",
+             Industry == "Manufacturing" & total_capital <= 3000 ~ "Microenterprise",
+             Industry == "Construction" & total_capital <= 3000 ~ "Microenterprise",
+             Industry == "Retail" & n_workers_ss < 11 & total_revenue <= 10000 ~ "Microenterprise",
+             Industry == "Hospitality" & n_workers_ss < 11 & total_revenue <= 10000 ~ "Microenterprise",
+             Industry == "Retail" & total_capital <= 3000 ~ "Microenterprise",
+             Industry == "Hospitality" & total_capital <= 3000 ~ "Microenterprise",
+             
+             # Small 
+             # AMC - annual average of 100 ss. employers or fewer & total annual revenue is not more than VND 50billion or total capital is not more than VND 20 billion
+             # RH - annual average of 50 ss. employers or fewer & total annual revenue is not more than VND 100 billion or total capital is not more than VND 50 billion
+
+             Industry == "Agriculture" & n_workers_ss < 101 & n_workers_ss > 10 & total_revenue <= 50000 & total_revenue > 3000 ~ "Small",
+             Industry == "Manufacturing" & n_workers_ss < 101 & n_workers_ss > 10 & total_revenue <= 50000 & total_revenue > 3000 ~ "Small",
+             Industry == "Construction" & n_workers_ss < 101 & n_workers_ss > 10 & total_revenue <= 50000 & total_revenue > 3000 ~ "Small",
+             Industry == "Agriculture" & total_capital > 3000 & total_capital <= 20000 ~ "Small",
+             Industry == "Manufacturing" & total_capital > 3000 & total_capital <= 20000 ~ "Small",
+             Industry == "Construction" & total_capital > 3000 & total_capital <= 20000 ~ "Small",
+             Industry == "Retail" & n_workers_ss > 11 & n_workers_ss < 51 & total_revenue > 10000 &  total_revenue <= 100000 ~ "Small",
+             Industry == "Hospitality" & n_workers_ss > 11 & n_workers_ss < 51 & total_revenue > 10000 & total_revenue <= 100000 ~ "Small",
+             Industry == "Retail" & total_capital <= 50000 & total_capital > 3000 ~ "Small",
+             Industry == "Hospitality" & total_capital <= 50000 & total_capital > 3000 ~ "Small",
+             
+             # Medium 
+             # AMC - annual average of 200 ss. employers or fewer & total annual revenue is not more than VND 200billion or total capital is not more than VND 100 billion
+             # RH - annual average of 100 ss. employers or fewer & total annual revenue is not more than VND 300billion or total capital is not more than VND 100 billion
+             Industry == "Agriculture" & n_workers_ss > 100 & n_workers_ss < 201 & total_revenue > 50000 & total_revenue <= 200000 ~ "Medium",
+             Industry == "Manufacturing" & n_workers_ss > 100 & n_workers_ss < 201 & total_revenue > 50000 & total_revenue <= 200000 ~ "Medium",
+             Industry == "Construction" & n_workers_ss > 100 & n_workers_ss < 201 & total_revenue > 50000 & total_revenue <= 200000 ~ "Medium",
+             Industry == "Agriculture" & total_capital <= 100000 & total_capital > 20000 ~ "Medium", 
+             Industry == "Manufacturing" & total_capital <= 100000 & total_capital > 20000 ~ "Medium",
+             Industry == "Construction" & total_capital <= 100000 & total_capital > 20000 ~ "Medium",
+             Industry == "Retail" & n_workers_ss > 50 & n_workers_ss < 101 & total_revenue <= 300000 & total_revenue > 100000  ~ "Medium",
+             Industry == "Hospitality" & n_workers_ss > 50 & n_workers_ss < 101 & total_revenue <= 300000 & total_revenue > 100000  ~ "Medium",
+             Industry == "Retail" & total_capital > 50000 & total_capital < 100000 ~ "Medium",
+             Industry == "Hospitality" & total_capital > 50000 & total_capital < 100000 ~ "Medium",
+             
+             # Large 
+             Industry == "Agriculture" & n_workers_ss > 200 & total_revenue > 200000 ~ "Large",
+             Industry == "Manufacturing" & n_workers_ss > 200 & total_revenue > 200000 ~ "Large",
+             Industry == "Construction" & n_workers_ss > 200 & total_revenue > 200000 ~ "Large",
+             Industry == "Agriculture" & total_capital > 100000 ~ "Large",
+             Industry == "Manufacturing" & total_capital > 100000 ~ "Large",
+             Industry == "Construction" & total_capital > 100000 ~ "Large",
+             Industry == "Retail" & n_workers_ss > 100 & total_revenue > 300000 ~ "Large",
+             Industry == "Hospitality" & n_workers_ss > 100 & total_revenue > 300000 ~ "Large",
+             Industry == "Retail" & total_capital > 100000 ~ "Large",
+             Industry == "Hospitality" & total_capital > 100000 ~ "Large",
              TRUE ~ NA  
            ))
-         
          )
 
   if(i %in% c("dn08", "dn09", "dn10", "dn11", "dn12", "dn13", "dn14", "dn15")){
@@ -211,30 +305,28 @@ for(i in dn0818){
   if(i %in% c("dn08", "dn09", "dn10", "dn12")){
 
     assign(i, get(i) %>%
-             select(tinh, huyen, xa, madn, macs, ma_thue, lhdn, namsxkd, vsic, n_workers, n_fworkers, n_fworkers_eoy, n_informal, n_finformal, n_workers_ss, n_fworkers_ss, wage, ss_comp, ss_cont, pretax_profit, fworkers, fworkers_eoy, f_ss, finformal, type))
+             select(tinh, huyen, xa, madn, macs, ma_thue, lhdn, namsxkd, vsic, n_workers, n_fworkers, n_fworkers_eoy, n_informal, n_finformal, n_workers_ss, n_fworkers_ss, wage, ss_comp, ss_cont, pretax_profit, fworkers, fworkers_eoy, f_ss, finformal, type, Industry, size))
   }
 
   if(i %in% c("dn11", "dn13", "dn14", "dn15")){
 
     assign(i, get(i) %>%
-             select(tinh, huyen, xa, madn, macs, ma_thue, lhdn, vsic, n_workers, n_fworkers, n_fworkers_eoy, n_informal, n_finformal, n_workers_ss, n_fworkers_ss, wage, ss_comp, ss_cont, pretax_profit, fworkers, fworkers_eoy, f_ss, finformal, type))
+             select(tinh, huyen, xa, madn, macs, ma_thue, lhdn, vsic, n_workers, n_fworkers, n_fworkers_eoy, n_informal, n_finformal, n_workers_ss, n_fworkers_ss, wage, ss_comp, ss_cont, pretax_profit, fworkers, fworkers_eoy, f_ss, finformal, type, Industry, size))
   }
 
   if(i %in% c("dn16")){
 
     assign(i, get(i) %>%
-             select(tinh, huyen, xa, ma_thue, lhdn, vsic, n_workers, n_fworkers, n_fworkers_eoy, n_informal, n_workers_ss, wage, ss_comp, ss_cont, pretax_profit, fworkers, fworkers_eoy, type))
+             select(tinh, huyen, xa, ma_thue, lhdn, vsic, n_workers, n_fworkers, n_fworkers_eoy, n_informal, n_workers_ss, wage, ss_comp, ss_cont, pretax_profit, fworkers, fworkers_eoy, type, Industry, size))
 
   }
 
   if(i %in% c("dn17", "dn18")){
 
     assign(i, get(i) %>%
-             select(tinh, huyen, xa, ma_thue, namsxkd, lhdn, vsic, n_workers, n_fworkers, n_fworkers_eoy, n_informal, n_workers_ss, wage, ss_comp, ss_cont, pretax_profit, fworkers, fworkers_eoy, type))
+             select(tinh, huyen, xa, ma_thue, namsxkd, lhdn, vsic, n_workers, n_fworkers, n_fworkers_eoy, n_informal, n_workers_ss, wage, ss_comp, ss_cont, pretax_profit, fworkers, fworkers_eoy, type, Industry, size))
 
   }
-
-
 }
 
 dn08 <- dn08 %>% mutate(year = 2008)
@@ -254,3 +346,8 @@ dn <- bind_rows(dn08, dn09, dn10, dn11, dn12, dn13, dn14, dn15, dn16, dn17, dn18
   mutate(id = cur_group_id())
 
 save(dn, file = "dn.rda")
+
+for (i in dn0818) {
+  save(list = dn0818, file = paste0(i, ".rda"))
+}
+
