@@ -27,7 +27,7 @@ for(i in dn0818){
   
 }
 
-dn12 <- dn12 %>% rename(fworkers_12 = f_ss)
+dn12 <- dn12 %>% mutate(fworkers_12 = f_ss)
 
 dn1218 <- bind_rows(dn12, dn13, dn14, dn15, dn16, dn17, dn18) %>% 
   group_by(tinh, huyen, xa, ma_thue) %>% 
@@ -81,7 +81,7 @@ fworkers_11 <- dn11 %>%
   select(tinh, huyen, xa, madn, ma_thue, f_ss) %>% 
   rename(fworkers_11 = f_ss)
 
-dn11 <- dn11 %>% rename(fworkers_11 = f_ss)
+dn11 <- dn11 %>% mutate(fworkers_11 = f_ss)
 
 for(i in dn0818){
   
@@ -144,7 +144,10 @@ etable(list(
   feols(finformal ~ fworkers_12 + post + did | id,
         subset(dn1218, year < 2016)),
   feols(log(n_workers_ss) ~ fworkers_12 + post + did | id,
-        subset(dn1218, year < 2016))), tex = T)
+        subset(dn1218, year < 2016)),
+  feols(f_ss ~ fworkers_12 + post + did | id,
+        subset(dn1218, year < 2016))
+  ), tex = T)
 
 # Robustness check 
 
@@ -158,7 +161,11 @@ etable(list(
   feols(finformal ~ fworkers_11 + post + did | id,
         subset(dn1218_robust, year < 2016)),
   feols(log(n_workers_ss) ~ fworkers_11 + post + did | id,
-        subset(dn1218_robust, year < 2016)) 
+        subset(dn1218_robust, year < 2016)),
+  feols(log(n_workers_ss) ~ fworkers_11 + post + did | id,
+        subset(dn1218_robust, year < 2016)),
+  feols(f_ss ~ fworkers_11 + post + did | id,
+        subset(dn1218_robust, year < 2016))
 ), tex = T)
 
 ###############
