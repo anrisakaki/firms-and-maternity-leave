@@ -81,9 +81,11 @@ fworkers_11 <- dn11 %>%
   select(tinh, huyen, xa, madn, ma_thue, f_ss) %>% 
   rename(fworkers_11 = f_ss)
 
+dn11 <- dn11 %>% rename(fworkers_11 = f_ss)
+
 for(i in dn0818){
   
-  if(i %in% c("dn12", "dn13", "dn14", "dn15","dn16", "dn17", "dn18")){
+  if(i %in% c("dn08", "dn09", "dn10", "dn12", "dn13", "dn14", "dn15","dn16", "dn17", "dn18")){
     
     assign(i, left_join(get(i), fworkers_11, by = c("tinh", "huyen", "xa", "madn", "ma_thue")))
     
@@ -98,14 +100,26 @@ dn1218_robust <- bind_rows(dn12, dn13, dn14, dn15, dn16, dn17, dn18) %>%
          did = post*fworkers_11) %>% 
   mutate(did = ifelse(year == 2012, 0, did))
 
-duplicates <- dn1218_robust %>% dplyr::group_by(tinh, huyen, xa, madn, ma_thue, id, fworkers_12, year) %>%
+duplicates <- dn1218_robust %>% dplyr::group_by(tinh, huyen, xa, madn, ma_thue, id, fworkers_11, year) %>%
   dplyr::summarise(n = dplyr::n(), .groups = "drop") %>%
   dplyr::filter(n > 1L) %>% 
   select(tinh, huyen, xa, madn, ma_thue, id)
 
 dn1218_robust <- anti_join(dn1218_robust, duplicates, by = c("tinh", "huyen", "xa", "madn", "ma_thue", "id"))
 
+dn0818_robust <- bind_rows(dn08, dn09, dn10, dn11, dn12, dn13, dn14, dn15, dn16, dn17, dn18) %>% 
+  group_by(tinh, huyen, xa, ma_thue) %>% 
+  mutate(id = cur_group_id())
+
+duplicates <- dn0818_robust %>% dplyr::group_by(tinh, huyen, xa, madn, ma_thue, id, fworkers_11, year) %>%
+  dplyr::summarise(n = dplyr::n(), .groups = "drop") %>%
+  dplyr::filter(n > 1L) %>% 
+  select(tinh, huyen, xa, madn, ma_thue, id)
+
+dn0818_robust <- anti_join(dn0818_robust, duplicates, by = c("tinh", "huyen", "xa", "madn", "ma_thue", "id"))
+
 save(dn1218_robust, file = "dn1218_robust.rda")
+save(dn0818_robust, file = "dn0818_robust.rda")
 
 ########
 # TWFE #
@@ -161,9 +175,21 @@ iplot(feols(log(n_workers) ~ i(year, fworkers_12, 2012) | id + year,
             vcov = ~id), xlab = "Year")
 dev.off()
 
+png("es_nworkers_robust.png")
+iplot(feols(log(n_workers) ~ i(year, fworkers_11, 2012) | id + year,
+            dn0818_robust,
+            vcov = ~id), xlab = "Year")
+dev.off()
+
 png("es_n_informal.png")
 iplot(feols(log(n_informal) ~ i(year, fworkers_12, 2012) | id + year,
             dn0815,
+            vcov = ~id), xlab = "Year")
+dev.off()
+
+png("es_n_informal_robust.png")
+iplot(feols(log(n_informal) ~ i(year, fworkers_11, 2012) | id + year,
+            dn0818_robust,
             vcov = ~id), xlab = "Year")
 dev.off()
 
@@ -173,7 +199,17 @@ iplot(feols(fworkers_eoy ~ i(year, fworkers_12, 2012) | id + year,
             vcov = ~id), xlab = "Year")
 dev.off()
 
+iplot(feols(fworkers_eoy ~ i(year, fworkers_11, 2012) | id + year,
+            dn0818_robust,
+            vcov = ~id), xlab = "Year")
+
 png("es_finformal.png")
+iplot(feols(finformal ~ i(year, fworkers_12, 2012) | id + year,
+            subset(dn0818_robust, year < 2016),
+            vcov = ~id), xlab = "Year")
+dev.off()
+
+png("es_finformal_robust.png")
 iplot(feols(finformal ~ i(year, fworkers_12, 2012) | id + year,
             subset(dn0815, year < 2016),
             vcov = ~id), xlab = "Year")
@@ -185,9 +221,21 @@ iplot(feols(log(n_workers_ss) ~ i(year, fworkers_12, 2012) | id + year,
             vcov = ~id), xlab = "Year")
 dev.off()
 
+png("es_n_workers_ss_robust.png")
+iplot(feols(log(n_workers_ss) ~ i(year, fworkers_11, 2012) | id + year,
+            dn0818_robust,
+            vcov = ~id), xlab = "Year")
+dev.off()
+
 png("es_f_ss.png")
 iplot(feols(f_ss ~ i(year, fworkers_12, 2012) | id + year,
             subset(dn0815, year < 2016),
+            vcov = ~id), xlab = "Year")
+dev.off()
+
+png("es_f_ss_robust.png")
+iplot(feols(f_ss ~ i(year, fworkers_11, 2012) | id + year,
+            subset(dn0818_robust, year < 2016),
             vcov = ~id), xlab = "Year")
 dev.off()
 
@@ -196,17 +244,27 @@ iplot(feols(log(wage) ~ i(year, fworkers_12, 2012) | id + year,
             dn0815), xlab = "Year")
 dev.off()
 
+png("es_wage_robust.png")
+iplot(feols(log(wage) ~ i(year, fworkers_11, 2012) | id + year,
+            dn0818_robust), xlab = "Year")
+dev.off()
+
 png("es_ss.png")
 iplot(feols(log(ss_cont) ~ i(year, fworkers_12, 2012) | id + year,
             dn0815), xlab = "Year")
 dev.off()
 
-png("es_ss_comp.png")
-iplot(feols(log(ss_comp) ~ i(year, fworkers_12, 2012) | id + year,
-            dn0815), xlab = "Year")
+png("es_ss_robust.png")
+iplot(feols(log(ss_cont) ~ i(year, fworkers_11, 2012) | id + year,
+            dn0818_robust), xlab = "Year")
 dev.off()
 
 png("es_profit.png")
 iplot(feols(log(pretax_profit) ~ i(year, fworkers_12, 2012) | id + year,
             dn0815), xlab = "Year")
+dev.off()
+
+png("es_profit_robust.png")
+iplot(feols(log(pretax_profit) ~ i(year, fworkers_11, 2012) | id + year,
+            dn0818_robust), xlab = "Year")
 dev.off()
