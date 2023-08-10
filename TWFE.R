@@ -217,7 +217,7 @@ iplot(feols(finformal ~ i(year, fworkers_12, 2012) | id + year,
 dev.off()
 
 png("es_finformal_robust.png")
-iplot(feols(finformal ~ i(year, fworkers_12, 2012) | id + year,
+iplot(feols(finformal ~ i(year, fworkers_11, 2012) | id + year,
             subset(dn0815, year < 2016),
             vcov = ~id), xlab = "Year")
 dev.off()
